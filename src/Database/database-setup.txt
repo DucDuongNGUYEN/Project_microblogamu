@@ -1,0 +1,51 @@
+CREATE TABLE `users` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `username` varchar(50) NOT NULL,
+  `password` varchar(50) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `username` (`username`),
+  CONSTRAINT `chk_username` CHECK (`username` like '@%')
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `messages` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `username` varchar(50) NOT NULL,
+  `header` varchar(128) NOT NULL,
+  `content` varchar(255) DEFAULT NULL,
+  `timestamp` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `username` (`username`),
+  CONSTRAINT `messages_ibfk_1` FOREIGN KEY (`username`) REFERENCES `users` (`username`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `tags` (
+  `tag` varchar(50) NOT NULL,
+  PRIMARY KEY (`tag`),
+  CONSTRAINT `chk_tag` CHECK (`tag` like '#%')
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `message_tags` (
+  `message_id` int(11) NOT NULL,
+  `tag_name` varchar(255) NOT NULL,
+  PRIMARY KEY (`message_id`,`tag_name`),
+  KEY `tag_name` (`tag_name`),
+  CONSTRAINT `message_tags_ibfk_1` FOREIGN KEY (`message_id`) REFERENCES `messages` (`id`),
+  CONSTRAINT `message_tags_ibfk_2` FOREIGN KEY (`tag_name`) REFERENCES `tags` (`tag`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+CREATE TABLE `user_followers` (
+    `id` INT PRIMARY KEY AUTO_INCREMENT,
+    `follower_id` INT NOT NULL,
+    `followee_id` INT NOT NULL,
+    FOREIGN KEY (`follower_id`) REFERENCES `users` (`id`),
+    FOREIGN KEY (`followee_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `tag_followers` (
+    `id` INT PRIMARY KEY AUTO_INCREMENT,
+    `user_id` INT NOT NULL,
+    `tag_name` VARCHAR(50) NOT NULL,
+    FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
+    FOREIGN KEY (`tag_name`) REFERENCES `tags` (`tag`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
